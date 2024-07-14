@@ -1,29 +1,59 @@
-from flask import Flask
-import random
+# Importar
+from flask import Flask, render_template
+
 
 app = Flask(__name__)
 
-lista_consejo=["La mayoría de las personas que sufren adicción tecnológica experimentan un fuerte estrés cuando se encuentran fuera del área de cobertura de la red o no pueden utilizar sus dispositivos",
-               "Según un estudio realizado en 2018, más del 50% de las personas de entre 18 y 34 años se consideran dependientes de sus smartphones",
-               "El estudio de la dependencia tecnológica es una de las áreas más relevantes de la investigación científica moderna",
-               "Una forma de combatir la dependencia tecnológica es buscar actividades que aporten placer y mejoren el estado de ánimo"]
-moneda=["cara",
-         "cruz"]
 
 
-@app.route("/")
+def result_calculate(size, lights, device):
+    # Variables que permiten calcular el consumo energético de los aparatos
+    home_coef = 100
+    light_coef = 0.04
+    devices_coef = 5   
+    return size * home_coef + lights * light_coef + device * devices_coef 
+
+# La primera página
+@app.route('/')
 def index():
-    return f'<h1>hola esta es mi pagina web y te dare consejos sobre la dependencia tecnologica, tambien puedes lanzar una moneda</h1><a href="/nuevo consejo">¡Ver un dato aleatorio!</a><a href="/lanzmon">¡Lanzar una moneda!</a>'
+    return render_template('index.html')
 
-@app.route("/lanzmon")
-def Lanzar_moneda():
-    return f'<p>{random.choice(moneda)}</p>'
+# La segunda página
+@app.route('/<size>')
+def lights(size):
+    return render_template(
+                            'lights.html', 
+                            size=size
+                           )
 
+@app.route('/monteco')
+def montaje():
+    return render_template(
+                            'montaje.html', 
+                           )
 
-@app.route("/nuevo consejo")
-def consejos():
-    return f'<p>{random.choice(lista_consejo)}</p>'
-    
+# La tercera página
+@app.route('/<size>/<lights>')
+def electronics(size, lights):
+    return render_template(
+                            'electronics.html',
+                            size = size, 
+                            lights = lights                           
+                           )
 
+@app.route('/asamblea')
+def asa():
+    return render_template(
+                            'asameco.html', 
+                           )
+
+# Cálculo
+@app.route('/<size>/<lights>/<device>')
+def end(size, lights, device):
+    return render_template('end.html', 
+                            result=result_calculate(int(size),
+                                                    int(lights), 
+                                                    int(device)
+                                                    )
+                        )
 app.run(debug=True)
-
